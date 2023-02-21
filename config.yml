@@ -1,0 +1,36 @@
+mqtt:
+  host: 192.168.0.XXXX
+  port: 1883
+  user: MQTT_USERNAME
+  password: MQTT_PASSWORD
+  topic_prefix: frigate
+
+record:
+  enabled: Yes
+  retain: 
+    days: 2 
+    mode: all
+
+
+#detectors:
+#  coral:
+#    type: edgetpu
+#    device: usb
+
+cameras:
+  front_door:
+    ffmpeg:
+      inputs:
+        - path: rtsp://CAMERA_USERNAME:CAMERA_PASSWORD@CAMERA_IP_ADDRESS:554/cam/realmonitor?channel=1&subtype=0
+          roles:
+            - record
+            - detect
+#            - rtmp
+#    rtmp:
+#      enabled: False # <-- RTMP should be disabled if your stream is not H264
+    detect:
+      width: 1920
+      height: 1080
+    objects:
+      track:
+        - person
