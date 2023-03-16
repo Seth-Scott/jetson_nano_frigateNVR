@@ -45,3 +45,52 @@ CONTAINER ID   IMAGE                                    COMMAND                 
 ```
 
 8. Navigate to Frigate in browser: `http://replace_this_with_frigate_ip:5000/`
+
+9. **BONUS: Object Detection With Google Coral**:
+    
+    **ONLY PROCEED BEYOND THIS POINT IF YOU INTEND TO USE THE GOOGLE CORAL** 
+
+    Ensure everything is working (with the CPU) prior to this point (with a single camera - anything more will overload the poor Nano's CPU). 
+    
+   I was able to get the [Google Coral](https://coral.ai/products/m2-accelerator-dual-edgetpu/) working by using the the following guide:
+
+    https://coral.ai/docs/m2/get-started/#3-install-the-pycoral-library
+
+10. The Jetson Nano has a power managment feature (ASPM) enabled by default for the M.2 slot, which places it into low-power mode periodically. This low-power mode DOES cause a compatibility issue with the Google Coral board. You can [disable this](https://github.com/google-coral/edgetpu/issues/96#issuecomment-616566015) by appending  `pcie_aspm=off` to the APPEND line in the `extlinux.conf` thusly (back up `extlinux.conf` first):
+
+    ```bash
+    nano /boot/extlinux/extlinux.conf
+    ```
+
+    Find the line that says:
+
+    ```bash
+        APPEND ${cbootargs} quiet root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 console$
+    ```
+
+    And change it to this:
+
+    ```bash
+    APPEND ${cbootargs} quiet root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 console$ pcie_aspm=off
+    ```
+
+11. Update your `config.yml` file by uncommenting and adjusting the following:
+    ```yml
+    detectors:
+    coral:
+        type: edgetpu
+        device: pci
+    ```
+12. Update your `frigate.yml` by uncommenting the following line:
+
+    ```yml
+          - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
+
+    ```
+    Reboot your device. 
+
+13. Check that Frigate is detecting & using the Google Coral by navigating to the following in your Frigate page:
+
+    ![coral_image](./assets/coral.png)
+
+    Theoretically, Frigate shouldn't have even launched
