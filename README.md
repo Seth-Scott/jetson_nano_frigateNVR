@@ -1,4 +1,4 @@
-# Frigate NVR installation on Jetson Nano 4GB
+# Frigate NVR installation on Jetson Nano 4GB with Google Coral Dual Edge TPU (AI Object Detection)
 
 1. Download all files to  `/home/nano/frigate` and navigate to the folder.
 
@@ -93,4 +93,4 @@ CONTAINER ID   IMAGE                                    COMMAND                 
 
     ![coral_image](./assets/coral.png)
 
-    Theoretically, Frigate shouldn't have even launched
+    Theoretically, Frigate shouldn't have even launched if it hasn't detected the Google Coral board. If you see the above image and it's showing an inference speed with a random decimal point, it's likely you have it configure correctly.
