@@ -27,26 +27,30 @@
     * Camera size (`detect` `width` and `height`)
     * Items to track (`person`, `dog`, etc.)
 
+5. Add your user to the docker group:
+    ```bash
+    $ sudo usermod -aG docker $USER
+    ```
 
-5. Append this to the root crontab:
+6. Append this to your user's crontab with `crontab -e`:
     ```bash
     @reboot docker compose -f /home/nano/frigate/frigate.yml up -d
     ```
-6. Reboot Jetson Nano
+7. Reboot Jetson Nano
     ```bash
     sudo reboot
     ```
 
-7. Test that Frigate is running with `sudo docker ps`. You should get output like: 
+8. Test that Frigate is running with `sudo docker ps`. You should get output like: 
 
 ```bash
 CONTAINER ID   IMAGE                                    COMMAND                  CREATED             STATUS         PORTS                                                                                  NAMES
 1234567891   blakeblackshear/frigate:stable-aarch64   "/init python3 -u -m…"   About an hour ago   Up 3 minutes   0.0.0.0:1935->1935/tcp, :::1935->1935/tcp, 0.0.0.0:5000->5000/tcp, :::5000->5000/tcp   frigate
 ```
 
-8. Navigate to Frigate in browser: `http://replace_this_with_frigate_ip:5000/`
+9. Navigate to Frigate in browser: `http://replace_this_with_frigate_ip:5000/`
 
-9. **BONUS: Object Detection With Google Coral**:
+10. **BONUS: Object Detection With Google Coral**:
     
     **ONLY PROCEED BEYOND THIS POINT IF YOU INTEND TO USE THE GOOGLE CORAL** 
 
@@ -56,7 +60,7 @@ CONTAINER ID   IMAGE                                    COMMAND                 
 
     https://coral.ai/docs/m2/get-started/#3-install-the-pycoral-library
 
-10. The Jetson Nano has a power managment feature (ASPM) enabled by default for the M.2 slot, which places it into low-power mode periodically. This low-power mode DOES cause a compatibility issue with the Google Coral board. You can [disable this](https://github.com/google-coral/edgetpu/issues/96#issuecomment-616566015) by appending  `pcie_aspm=off` to the APPEND line in the `extlinux.conf` thusly (back up `extlinux.conf` first):
+11. The Jetson Nano has a power managment feature (ASPM) enabled by default for the M.2 slot, which places it into low-power mode periodically. This low-power mode DOES cause a compatibility issue with the Google Coral board. You can [disable this](https://github.com/google-coral/edgetpu/issues/96#issuecomment-616566015) by appending  `pcie_aspm=off` to the APPEND line in the `extlinux.conf` thusly (back up `extlinux.conf` first):
 
     ```bash
     nano /boot/extlinux/extlinux.conf
@@ -74,14 +78,14 @@ CONTAINER ID   IMAGE                                    COMMAND                 
     APPEND ${cbootargs} quiet root=/dev/mmcblk0p1 rw rootwait rootfstype=ext4 console$ pcie_aspm=off
     ```
 
-11. Update your `config.yml` file by uncommenting and adjusting the following:
+12. Update your `config.yml` file by uncommenting and adjusting the following:
     ```yml
     detectors:
     coral:
         type: edgetpu
         device: pci
     ```
-12. Update your `frigate.yml` by uncommenting the following line:
+13. Update your `frigate.yml` by uncommenting the following line:
 
     ```yml
           - /dev/apex_0:/dev/apex_0 # passes a PCIe Coral, follow driver instructions here https://coral.ai/docs/m2/get-started/#2a-on-linux
@@ -89,7 +93,7 @@ CONTAINER ID   IMAGE                                    COMMAND                 
     ```
     Reboot your device. 
 
-13. Check that Frigate is detecting & using the Google Coral by navigating to the following in your Frigate page:
+14. Check that Frigate is detecting & using the Google Coral by navigating to the following in your Frigate page:
 
     ![coral_image](./assets/coral.png)
 
